@@ -72,7 +72,6 @@ class TestServer:
 
         # state
         self.closed = None
-        self.is_running = False
 
     async def start_server(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -100,6 +99,10 @@ class TestServer:
         server_settings.pop("main_start", None)
         server_settings.pop("main_stop", None)
 
+        await self.app._startup()
+        await self.app._server_event("init", "before", loop=self.loop)
+        await self.app._server_event("init", "after", loop=self.loop)
+
         # Trigger before_start events
         await trigger_events(self.before_server_start, self.loop)
 
@@ -108,8 +111,6 @@ class TestServer:
 
         # start server
         self.server = await serve(**server_settings)
-        self.is_running = True
-        self.app.is_running = True
 
         # Trigger after_start events
         await trigger_events(self.after_server_start, self.loop)
@@ -118,7 +119,7 @@ class TestServer:
         """
         Close server.
         """
-        if self.is_running and not self.closed:
+        if not self.closed:
             # Trigger before_stop events
             await trigger_events(self.before_server_stop, self.loop)
 
@@ -142,8 +143,6 @@ class TestServer:
             await trigger_events(self.after_server_stop, self.loop)
 
             self.closed = True
-            self.is_running = False
-            self.app.is_running = False
             self.port = None
 
     def has_started(self):
