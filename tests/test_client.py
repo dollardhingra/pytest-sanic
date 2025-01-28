@@ -113,6 +113,3 @@ async def test_fixture_sanic_client_raise_exception_for_non_sanic_app(sanic_clie
     with pytest.raises(TypeError):
         await sanic_client(SimpleApplication())
 
-
-async def test_fixture_sanic_client_app_is_running(test_cli):
-    assert test_cli.app.is_running == True

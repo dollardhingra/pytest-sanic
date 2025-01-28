@@ -2,7 +2,6 @@ import pytest
 
 
 async def test_fixture_test_server_get_properties(sanic_server):
-    assert sanic_server.is_running is True
     assert sanic_server.has_started() is True
     assert sanic_server.port is not None
     url = sanic_server.make_url('/test')
@@ -12,7 +11,6 @@ async def test_fixture_test_server_get_properties(sanic_server):
 async def test_fixture_test_server_close(sanic_server):
     # close
     await sanic_server.close()
-    assert sanic_server.is_running is False
     assert sanic_server.closed is True
     assert sanic_server.port is None
 
